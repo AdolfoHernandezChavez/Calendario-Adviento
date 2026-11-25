@@ -13,7 +13,7 @@ const CONFIG = {
 
   // true = abre TODAS las casillas para probar la web. Déjalo en false al enviarla.
   // También puedes probar añadiendo ?todo al final de la dirección.
-  modoPrueba: true,
+  modoPrueba: false,
 
   // Si un día no lleva "foto", se busca en fotos/dia-N.jpg
   carpetaFotos: "fotos/",
