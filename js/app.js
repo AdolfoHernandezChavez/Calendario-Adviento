@@ -61,14 +61,26 @@ function abrir(d) {
   actual = d; abiertas.add(d); guardar();
   const datos = CONFIG.dias[d] || {};
   const final = d === ultimo;
-  const v = CONFIG.videoFinal;
+  const v = CONFIG.videoFinal || {};
   $("gran").textContent = d;
-  $("dTitulo").textContent = datos.titulo || (final ? v.titulo : "Día " + d);
-  $("dTexto").textContent = datos.texto || (final ? v.texto : TEXTOS_POR_DEFECTO[(d - 1) % TEXTOS_POR_DEFECTO.length]);
+  $("dTitulo").textContent = datos.titulo || (final && v.titulo) || "Día " + d;
+  $("dTexto").textContent = datos.texto || (final && v.texto) || TEXTOS_POR_DEFECTO[(d - 1) % TEXTOS_POR_DEFECTO.length];
   $("pieFoto").textContent = datos.pie || "";
-  const visor = $("visor"); visor.innerHTML = "";
+
+  const marco = $("marco"), visor = $("visor"), acc = $("acciones");
+  visor.innerHTML = ""; visor.style.aspectRatio = ""; marco.style.width = ""; acc.innerHTML = "";
+
+  // Botón con enlace (por ejemplo, la app del último día)
+  if (datos.enlace) {
+    const b = document.createElement("a");
+    b.className = "boton"; b.href = datos.enlace; b.target = "_blank"; b.rel = "noopener";
+    b.textContent = datos.boton || "Abrir";
+    acc.appendChild(b);
+  }
 
   if (final && v.url) {
+    // Vídeo final (opcional)
+    marco.style.width = "min(100%, 680px)"; visor.style.aspectRatio = "16 / 9";
     if (v.tipo === "youtube") {
       const f = document.createElement("iframe");
       f.src = "https://www.youtube.com/embed/" + v.url; f.allowFullscreen = true; f.title = "Vídeo final";
@@ -76,11 +88,22 @@ function abrir(d) {
     } else {
       const m = document.createElement("video"); m.src = v.url; m.controls = true; m.playsInline = true; visor.appendChild(m);
     }
+  } else if (datos.enlace && !datos.foto) {
+    // Día con enlace y sin foto: tarjeta de regalo
+    marco.style.width = "min(100%, 380px)"; visor.style.aspectRatio = "4 / 5";
+    visor.innerHTML = '<div class="vacio"><b>🎁</b>Tu regalo de Navidad</div>';
   } else {
-    const img = new Image(); img.alt = datos.titulo || "Foto del día " + d; img.src = fotoDe(d);
+    // Foto: el marco se adapta a la forma de la foto, sin recortarla
+    const img = new Image(); img.alt = datos.titulo || "Foto del día " + d;
+    img.onload = () => {
+      visor.style.aspectRatio = img.naturalWidth + " / " + img.naturalHeight;
+      marco.style.width = "min(100%, calc(" + (72 * img.naturalWidth / img.naturalHeight).toFixed(2) + "vh + 28px))";
+    };
     img.onerror = () => {
+      marco.style.width = "min(100%, 380px)"; visor.style.aspectRatio = "4 / 5";
       visor.innerHTML = '<div class="vacio"><b>' + ADORNOS[(d - 1) % ADORNOS.length] + '</b>Aquí irá la foto del día ' + d + '.<br>Guárdala como <code>' + fotoDe(d) + '</code></div>';
     };
+    img.src = fotoDe(d);
     visor.appendChild(img);
   }
   $("ant").disabled = !(d > 1);
