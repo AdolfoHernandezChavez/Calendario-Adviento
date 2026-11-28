@@ -51,7 +51,7 @@ const CONFIG = {
     24: {
       titulo: "APP-SIRENITA-GYM",
       texto: "Llevo preparando, a ratitos, alrededor de un mes un regalo para estas Navidades. Aquí te dejo una app de gym hecha por mí para usarla los dos.",
-      enlace: "https://PEGA-AQUI-EL-ENLACE-DE-TU-APP",
+      enlace: " https://adolfohernandezchavez.github.io/APP-GYM/",
       boton: "Abrir la app 💪",
       foto: "fotos/app.jpeg"
     },
